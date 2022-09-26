@@ -14,6 +14,9 @@ const HTTP_PORT = process.env.PORT || 8080;
 const express = require('express');
 const app = express();
 const path = require('path');
+const dataService = require(path.join(__dirname, "data-service.js"));
+const employeeData = require(path.join(__dirname, "/data/employees.json"));
+const departmentData = require(path.join(__dirname, "/data/departments.json"));
 
 app.use(express.static('public'));  // Set public as a resource for static files
 
@@ -25,6 +28,22 @@ app.get("/", (req, res) => {
 // Route to About page
 app.get("/about", (req, res) => {
   res.sendFile(path.join(__dirname, '/views/about.html'));
+});
+
+// Route to employee data
+app.get("/employees", (req, res) => {
+  res.json(employeeData);
+});
+
+// Route to manager data
+app.get("/managers", (req, res) => {
+  //res.json(managerData);
+  res.send("TODO: return manager data");
+});
+
+// Route to department data
+app.get("/departments", (req, res) => {
+  res.json(departmentData);
 });
 
 // Catch all other requests
