@@ -17,7 +17,7 @@ const path = require('path');
 
 app.use(express.static('public'));  // Set public as a resource for static files
 
-// Set up a route to the home page
+// Route to the home page
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, '/views/home.html')); // Send the home page  
 });
@@ -26,6 +26,7 @@ app.get("/", (req, res) => {
 app.get("/about", (req, res) => {
   res.sendFile(path.join(__dirname, '/views/about.html'));
 });
+
 // Catch all other requests
 app.use((req, res) => {
   res.status(404).send("Page Not Found");
