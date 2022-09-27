@@ -14,9 +14,7 @@ const HTTP_PORT = process.env.PORT || 8080;
 const express = require('express');
 const app = express();
 const path = require('path');
-const dataService = require(path.join(__dirname, "data-service.js"));
-const employeeData = require(path.join(__dirname, "/data/employees.json"));
-const departmentData = require(path.join(__dirname, "/data/departments.json"));
+const data = require(path.join(__dirname, 'data-service.js'));
 
 app.use(express.static('public'));  // Set public as a resource for static files
 
@@ -32,18 +30,38 @@ app.get("/about", (req, res) => {
 
 // Route to employee data
 app.get("/employees", (req, res) => {
-  res.json(employeeData);
+  data.getAllEmployees()
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      console.log("Error retrieving employees: " + err);
+      res.json({ message: err });
+    });
 });
 
 // Route to manager data
 app.get("/managers", (req, res) => {
-  //res.json(managerData);
-  res.send("TODO: return manager data");
+  data.getManagers()
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      console.log("Error retrieving managers: " + err);
+      res.json({ message: err });
+    });
 });
 
 // Route to department data
 app.get("/departments", (req, res) => {
-  res.json(departmentData);
+  data.getDepartments()
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      console.log("Error retrieving departments: " + err);
+      res.json({ message: err });
+    });
 });
 
 // Catch all other requests
@@ -51,6 +69,10 @@ app.use((req, res) => {
   res.status(404).send("Page Not Found");
 })
 
-app.listen(HTTP_PORT);
-console.log("Express http server listening on " + HTTP_PORT);
+data.initialize().then(() => {
+  app.listen(HTTP_PORT);
+  console.log("Express http server listening on " + HTTP_PORT);
+}).catch((err) => {
+  console.log("Error starting server: " + err + " aborting startup");
+});
 
