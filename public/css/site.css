@@ -1,0 +1,35 @@
+:root {
+  --colour1: #E8EEF2;
+  --colour2: #D6C9C9;
+  --colour3: #C7D3DD;
+  --colour4: #77B6EA;
+  --colour5: #37393A;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: var(--colour1);
+}
+
+.navbar {
+  background-color: var(--colour5) ;
+}
+
+.navbar-default .navbar-nav > li > a:focus, .navbar-default .navbar-nav > li > a:hover {
+  color: var(--colour1);
+}
+
+.navbar-default .navbar-nav > li > a:focus, .navbar-default .navbar-nav > li > a { 
+  color: var(--colour2);
+}
+.navbar-default .navbar-brand:focus, .navbar-default .navbar-brand{
+  color: var(--colour2);
+}
+
+.navbar-default .navbar-brand:focus, .navbar-default .navbar-brand:hover{
+  color: var(--colour1);
+}
+
+h2 {
+  color: var(--colour5);
+}
