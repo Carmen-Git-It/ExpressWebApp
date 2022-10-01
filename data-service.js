@@ -13,8 +13,8 @@ const fs = require('fs');
 const path = require('path');
 
 // Representation of the JSON data
-var employees = [];
-var departments = [];
+let employees = [];
+let departments = [];
 
 // Reads and parses the data from the employees.json file into the
 // global employees variable. Does the same for departments and
