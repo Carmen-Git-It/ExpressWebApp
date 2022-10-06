@@ -29,37 +29,25 @@ app.get("/about", (req, res) => {
 });
 
 // Route to employee data
-app.get("/employees", (req, res) => {
-  data.getAllEmployees()
+app.get("/posts", (req, res) => {
+  data.getAllPosts()
     .then((data) => {
       res.json(data);
     })
     .catch((err) => {
-      console.log("Error retrieving employees: " + err);
+      console.log("Error retrieving posts: " + err);
       res.json({ message: err });
     });
 });
 
 // Route to manager data
-app.get("/managers", (req, res) => {
-  data.getManagers()
+app.get("/categories", (req, res) => {
+  data.getCategories()
     .then((data) => {
       res.json(data);
     })
     .catch((err) => {
-      console.log("Error retrieving managers: " + err);
-      res.json({ message: err });
-    });
-});
-
-// Route to department data
-app.get("/departments", (req, res) => {
-  data.getDepartments()
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => {
-      console.log("Error retrieving departments: " + err);
+      console.log("Error retrieving categories: " + err);
       res.json({ message: err });
     });
 });
