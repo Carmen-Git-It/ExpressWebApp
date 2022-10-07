@@ -47,6 +47,27 @@ function initialize() {
   });
 }
 
+// Add post
+function addPost(post) {
+  return new Promise((resolve, reject) => {
+    if (post.hasOwnProperty('published')) {
+      post.published = true;
+    } else {
+      posts.published = false;
+    }
+    post.id = posts.length + 1;
+    date = new Date();
+    post.postDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    posts.push(post);
+
+    if (post) {
+      resolve(post);
+    } else {
+      reject("Error adding post! " + post);
+    }
+  });
+}
+
 // Returns the list of all posts
 function getAllPosts() {
   return new Promise((resolve, reject) => {
@@ -87,4 +108,5 @@ module.exports = {
   getAllPosts,
   getCategories,
   getPublishedPosts,
+  addPost
 }

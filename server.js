@@ -77,15 +77,17 @@ app.get("/categories", (req, res) => {
     });
 });
 
+// Redirects to the add post page
 app.get("/posts/add", (req, res) => {
   res.sendFile(path.join(__dirname, '/views/addPost.html'));
 });
 
+// Adds posts and uploads files 
 app.post("/posts/add", upload.single("featureImage"), (req, res) => {
   let streamUpload = (req) => {
     return new Promise((resolve, reject) => {
       let stream = cloudinary.uploader.upload_stream(
-        (error, result) => {
+        (result, error) => { // Swapped error and result
           if (result) {
             resolve(result);
           } else {
@@ -97,17 +99,25 @@ app.post("/posts/add", upload.single("featureImage"), (req, res) => {
       streamifier.createReadStream(req.file.buffer).pipe(stream);
     });
   };
+
   async function upload(req) {
-    let result = await streamUpload(req);
+    let result = await streamUpload(req);//.catch((err) => {
+    // console.log("Error: " + err);
+    // });
     console.log(result);
     return result;
   }
+
   upload(req).then((uploaded) => {
     req.body.featureImage = uploaded.url;
-
-    // TODO: Process the req.body and add it as a new Blog Post before redirecting to /posts
-
+    data.addPost(JSON.parse(JSON.stringify(req.body)));
+    res.redirect("/posts");
   });
+});
+
+// Query posts by categories
+app.get("/posts?category=value", (req, res) => {
+
 });
 
 // Catch all other requests
