@@ -103,10 +103,52 @@ function getCategories() {
   });
 }
 
+function getPostsByCategory(category) {
+  return new Promise((resolve, reject) => {
+    let temp = posts.filter((post) => {
+      return post.category === category;
+    });
+    if (temp.length === 0) {
+      reject("No results returned");
+    } else {
+      resolve(temp);
+    }
+  });
+}
+
+function getPostsByMinDate(minDateStr) {
+  return new Promise((resolve, reject) => {
+    let temp = posts.filter((post) => {
+      return (new Date(post.postDate) >= new Date(minDateStr));
+    });
+    if (temp.length === 0) {
+      reject("No results returned");
+    } else {
+      resolve(temp);
+    }
+  });
+}
+
+function getPostById(id) {
+  return new Promise((resolve, reject) => {
+    let temp = posts.filter((post) => {
+      return post.id === id;
+    });
+    if (temp.lenth === 0) {
+      reject("No result returned");
+    } else {
+      resolve(temp[0]);
+    }
+  });
+}
+
 module.exports = {
   initialize,
   getAllPosts,
   getCategories,
   getPublishedPosts,
-  addPost
+  addPost,
+  getPostsByCategory,
+  getPostsByMinDate,
+  getPostById,
 }

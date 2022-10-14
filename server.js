@@ -55,14 +55,40 @@ app.get("/blog", (req, res) => {
 
 // Route to employee data
 app.get("/posts", (req, res) => {
-  data.getAllPosts()
-    .then((data) => {
+  if (req.query[category]) {
+    data.getPostsByCategory(req.query[category]).then((data) => {
       res.json(data);
-    })
-    .catch((err) => {
+    }).catch((err) => {
       console.log("Error retrieving posts: " + err);
       res.json({ message: err });
     });
+  } else if (req.query[minDate]) {
+    data.getPostsByMinDate(req.query[minDate]).then((data) => {
+      res.json(data);
+    }).catch((err) => {
+      console.log("Error retrieving posts: " + err);
+      res.json({ message: err });
+    });
+  } else {
+    data.getAllPosts()
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((err) => {
+        console.log("Error retrieving posts: " + err);
+        res.json({ message: err });
+      });
+  }
+});
+
+// Get a post by id
+app.get("/posts/:value", (req, res) => {
+  data.getPostById(req.params.value).then((data) => {
+    res.json(data);
+  }).catch((err) => {
+    console.log("Error retrieving post: " + err);
+    res.json({ message: err });
+  });
 });
 
 // Route to manager data
@@ -113,11 +139,6 @@ app.post("/posts/add", upload.single("featureImage"), (req, res) => {
     data.addPost(JSON.parse(JSON.stringify(req.body)));
     res.redirect("/posts");
   });
-});
-
-// Query posts by categories
-app.get("/posts?category=value", (req, res) => {
-
 });
 
 // Catch all other requests
