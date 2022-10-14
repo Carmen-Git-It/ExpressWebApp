@@ -55,15 +55,15 @@ app.get("/blog", (req, res) => {
 
 // Route to employee data
 app.get("/posts", (req, res) => {
-  if (req.query[category]) {
-    data.getPostsByCategory(req.query[category]).then((data) => {
+  if (req.query.hasOwnProperty('category')) {
+    data.getPostsByCategory(Number(req.query.category)).then((data) => {
       res.json(data);
     }).catch((err) => {
       console.log("Error retrieving posts: " + err);
       res.json({ message: err });
     });
-  } else if (req.query[minDate]) {
-    data.getPostsByMinDate(req.query[minDate]).then((data) => {
+  } else if (req.query.hasOwnProperty('minDate')) {
+    data.getPostsByMinDate(req.query.minDate).then((data) => {
       res.json(data);
     }).catch((err) => {
       console.log("Error retrieving posts: " + err);
@@ -83,7 +83,7 @@ app.get("/posts", (req, res) => {
 
 // Get a post by id
 app.get("/posts/:value", (req, res) => {
-  data.getPostById(req.params.value).then((data) => {
+  data.getPostById(Number(req.params.value)).then((data) => {
     res.json(data);
   }).catch((err) => {
     console.log("Error retrieving post: " + err);
