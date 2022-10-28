@@ -18,6 +18,28 @@ const data = require(path.join(__dirname, 'data-service.js'));
 const multer = require("multer");
 const cloudinary = require("cloudinary");
 const streamifier = require("streamifier");
+const exphbs = require('express-handlebars');
+
+// Handlebars app engine config
+app.engine('.hbs', exphbs.engine({
+  extname:'.hbs',
+  helpers:{
+    navLink: function(url, options) {
+      return '<li' + 
+      ((url == app.locals.activeRoute) ? ' class="active" ' : '') + 
+      '><a href="' + url + '">' + options.fn(this) + '</a></li>';
+    },
+  equal: function(lvalue, rvalue, options) {
+    if (arguments.length < 3)
+        throw new Error("Handlebars Helper equal needs 2 parameters");
+    if (lvalue != rvalue) {
+        return options.inverse(this);
+    } else {
+        return options.fn(this);
+    }
+  } 
+  }}));
+app.set('view engine', '.hbs');
 
 // Cloudinary config
 cloudinary.config({
@@ -31,6 +53,14 @@ const upload = multer(); // no local storage
 
 app.use(express.static('public'));  // Set public as a resource for static files
 
+app.use((req, res, next) => {
+  let route = req.path.substring(1);
+  app.locals.activeRoute = "/" + (isNaN(route.split('/')[1]) ? route.replace(/\/(?!.*)/,"") : route.replace(/\/(.*)/,""));
+
+  app.locals.viewingCategory = req.query.category;
+  next();
+});
+
 // Route to the home page
 app.get("/", (req, res) => {
   res.redirect("/about");
@@ -38,7 +68,7 @@ app.get("/", (req, res) => {
 
 // Route to About page
 app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, '/views/about.html'));
+  res.render('about');
 });
 
 // Route to blog page (filter posts by published) 
@@ -81,8 +111,14 @@ app.get("/posts", (req, res) => {
   }
 });
 
+// Redirects to the add post page
+app.get("/posts/add", (req, res) => {
+  res.render('addPost');
+});
+
 // Get a post by id
 app.get("/posts/:value", (req, res) => {
+  console.log("HI!");
   data.getPostById(Number(req.params.value)).then((data) => {
     res.json(data);
   }).catch((err) => {
@@ -101,11 +137,6 @@ app.get("/categories", (req, res) => {
       console.log("Error retrieving categories: " + err);
       res.json({ message: err });
     });
-});
-
-// Redirects to the add post page
-app.get("/posts/add", (req, res) => {
-  res.sendFile(path.join(__dirname, '/views/addPost.html'));
 });
 
 // Adds posts and uploads files 
