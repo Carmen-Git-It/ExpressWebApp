@@ -87,26 +87,26 @@ app.get("/blog", (req, res) => {
 app.get("/posts", (req, res) => {
   if (req.query.hasOwnProperty('category')) {
     data.getPostsByCategory(Number(req.query.category)).then((data) => {
-      res.json(data);
+      res.render('posts', {posts: data});
     }).catch((err) => {
       console.log("Error retrieving posts: " + err);
-      res.json({ message: err });
+      res.render("posts", {message: "no results"});
     });
   } else if (req.query.hasOwnProperty('minDate')) {
     data.getPostsByMinDate(req.query.minDate).then((data) => {
-      res.json(data);
+      res.render('posts', {posts: data});
     }).catch((err) => {
       console.log("Error retrieving posts: " + err);
-      res.json({ message: err });
+      res.render("posts", {message: "no results"});
     });
   } else {
     data.getAllPosts()
       .then((data) => {
-        res.json(data);
+        res.render('posts', {posts: data});
       })
       .catch((err) => {
         console.log("Error retrieving posts: " + err);
-        res.json({ message: err });
+        res.render("posts", {message: "no results"});
       });
   }
 });
