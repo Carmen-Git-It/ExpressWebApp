@@ -131,11 +131,11 @@ app.get("/posts/:value", (req, res) => {
 app.get("/categories", (req, res) => {
   data.getCategories()
     .then((data) => {
-      res.json(data);
+      res.render("categories", {categories: data});
     })
     .catch((err) => {
       console.log("Error retrieving categories: " + err);
-      res.json({ message: err });
+      res.render("categories", {message: "no results"});
     });
 });
 
