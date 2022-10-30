@@ -4,7 +4,7 @@
 *  No part of this assignment has been copied manually or electronically from any other source
 *  (including web sites) or distributed to other students.
 * 
-*  Name: Carmen Whitton Student ID: 102710217 Date: 09/26/2022
+*  Name: Carmen Whitton Student ID: 102710217 Date: 10/26/2022
 *
 *  Online (Heroku) URL: https://web322-carmen.herokuapp.com/
 *
@@ -19,26 +19,31 @@ const multer = require("multer");
 const cloudinary = require("cloudinary");
 const streamifier = require("streamifier");
 const exphbs = require('express-handlebars');
+const stripjs = require('strip-js');
 
 // Handlebars app engine config
 app.engine('.hbs', exphbs.engine({
-  extname:'.hbs',
-  helpers:{
-    navLink: function(url, options) {
-      return '<li' + 
-      ((url == app.locals.activeRoute) ? ' class="active" ' : '') + 
-      '><a href="' + url + '">' + options.fn(this) + '</a></li>';
+  extname: '.hbs',
+  helpers: {
+    navLink: function (url, options) {
+      return '<li' +
+        ((url == app.locals.activeRoute) ? ' class="active" ' : '') +
+        '><a href="' + url + '">' + options.fn(this) + '</a></li>';
     },
-  equal: function(lvalue, rvalue, options) {
-    if (arguments.length < 3)
+    equal: function (lvalue, rvalue, options) {
+      if (arguments.length < 3)
         throw new Error("Handlebars Helper equal needs 2 parameters");
-    if (lvalue != rvalue) {
+      if (lvalue != rvalue) {
         return options.inverse(this);
-    } else {
+      } else {
         return options.fn(this);
+      }
+    },
+    safeHTML: function (context) {
+      return stripjs(context);
     }
-  } 
-  }}));
+  }
+}));
 app.set('view engine', '.hbs');
 
 // Cloudinary config
@@ -55,7 +60,7 @@ app.use(express.static('public'));  // Set public as a resource for static files
 
 app.use((req, res, next) => {
   let route = req.path.substring(1);
-  app.locals.activeRoute = "/" + (isNaN(route.split('/')[1]) ? route.replace(/\/(?!.*)/,"") : route.replace(/\/(.*)/,""));
+  app.locals.activeRoute = "/" + (isNaN(route.split('/')[1]) ? route.replace(/\/(?!.*)/, "") : route.replace(/\/(.*)/, ""));
 
   app.locals.viewingCategory = req.query.category;
   next();
@@ -63,7 +68,7 @@ app.use((req, res, next) => {
 
 // Route to the home page
 app.get("/", (req, res) => {
-  res.redirect("/about");
+  res.redirect("/blog");
 });
 
 // Route to About page
@@ -72,41 +77,73 @@ app.get("/about", (req, res) => {
 });
 
 // Route to blog page (filter posts by published) 
-app.get("/blog", (req, res) => {
-  data.getPublishedPosts()
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => {
-      console.log("Error loading blog posts: " + err);
-      res.json({ message: err });
+app.get("/blog", async (req, res) => {
+  // Declare an object to store properties for the view
+  let viewData = {};
+
+  // declare empty array to hold "post" objects
+  let posts = [];
+
+  // if there's a "category" query, filter the returned posts by category
+  if (req.query.category) {
+    // Obtain the published "posts" by category
+    data.getPublishedPostsByCategory(Number(req.query.category)).then((data) => {
+      data.sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+      viewData.posts = data;
+      viewData.post = data[0];
+    }).catch((err) => {
+      viewData.message = "no results";
     });
+  } else {
+    // Obtain the published "posts"
+    data.getPublishedPosts().then((data) => {
+      data.sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+      viewData.posts = data;
+      viewData.post = data[0];
+    }).catch((err) => {
+      viewData.message = "no results";
+    });
+  }
+
+  // sort the published posts by postDate
+  posts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+
+  // Obtain the full list of "categories"
+  data.getCategories().then((data) => {
+    viewData.categories = data;
+  }).catch((err) => {
+    viewData.categoriesMessage = "no results";
+  });
+
+  // render the "blog" view with all of the data (viewData)
+  res.render("blog", { data: viewData })
+
 });
 
 // Route to employee data
 app.get("/posts", (req, res) => {
   if (req.query.hasOwnProperty('category')) {
     data.getPostsByCategory(Number(req.query.category)).then((data) => {
-      res.render('posts', {posts: data});
+      res.render('posts', { posts: data });
     }).catch((err) => {
       console.log("Error retrieving posts: " + err);
-      res.render("posts", {message: "no results"});
+      res.render("posts", { message: "no results" });
     });
   } else if (req.query.hasOwnProperty('minDate')) {
     data.getPostsByMinDate(req.query.minDate).then((data) => {
-      res.render('posts', {posts: data});
+      res.render('posts', { posts: data });
     }).catch((err) => {
       console.log("Error retrieving posts: " + err);
-      res.render("posts", {message: "no results"});
+      res.render("posts", { message: "no results" });
     });
   } else {
     data.getAllPosts()
       .then((data) => {
-        res.render('posts', {posts: data});
+        res.render('posts', { posts: data });
       })
       .catch((err) => {
         console.log("Error retrieving posts: " + err);
-        res.render("posts", {message: "no results"});
+        res.render("posts", { message: "no results" });
       });
   }
 });
@@ -118,7 +155,6 @@ app.get("/posts/add", (req, res) => {
 
 // Get a post by id
 app.get("/posts/:value", (req, res) => {
-  console.log("HI!");
   data.getPostById(Number(req.params.value)).then((data) => {
     res.json(data);
   }).catch((err) => {
@@ -131,12 +167,62 @@ app.get("/posts/:value", (req, res) => {
 app.get("/categories", (req, res) => {
   data.getCategories()
     .then((data) => {
-      res.render("categories", {categories: data});
+      res.render("categories", { categories: data });
     })
     .catch((err) => {
       console.log("Error retrieving categories: " + err);
-      res.render("categories", {message: "no results"});
+      res.render("categories", { message: "no results" });
     });
+});
+
+app.get('/blog/:id', async (req, res) => {
+
+  // Declare an object to store properties for the view
+  let viewData = {};
+
+  // declare empty array to hold "post" objects
+  let posts = [];
+
+  // if there's a "category" query, filter the returned posts by category
+  if (req.query.category) {
+    // Obtain the published "posts" by category
+    data.getPublishedPostsByCategory(req.query.category).then((data) => {
+      posts = data;
+    }).catch((err) => {
+      viewData.message = "no results";
+    });
+  } else {
+    // Obtain the published "posts"
+    data.getPublishedPosts().then((data) => {
+      viewData.posts = data;
+    }).catch((err) => {
+      viewData.message = "no results";
+    });
+  }
+
+  // sort the published posts by postDate
+  posts.sort((a, b) => new Date(b.postDate) - new Date(a.postDate));
+
+  // store the "posts" and "post" data in the viewData object (to be passed to the view)
+  viewData.posts = posts;
+
+  // Obtain the post by "id"
+  data.getPostById(Number(req.params.id)).then((data) => {
+    viewData.post = data;
+  }).catch((err) => {
+    viewData.message = "no results";
+  });
+
+  // Obtain the full list of "categories"
+  data.getCategories().then((data) => {
+    viewData.categories = data;
+  }).catch((err) => {
+    viewData.categoriesMessage = "no results";
+  });
+
+
+  // render the "blog" view with all of the data (viewData)
+  res.render("blog", { data: viewData })
 });
 
 // Adds posts and uploads files 

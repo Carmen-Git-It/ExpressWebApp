@@ -4,7 +4,7 @@
 *  No part of this assignment has been copied manually or electronically from any other source
 *  (including web sites) or distributed to other students.
 * 
-*  Name: Carmen Whitton Student ID: 102710217 Date: 09/26/2022
+*  Name: Carmen Whitton Student ID: 102710217 Date: 10/26/2022
 *
 *  Online (Heroku) URL: https://web322-carmen.herokuapp.com/
 *
@@ -142,6 +142,19 @@ function getPostById(id) {
   });
 }
 
+function getPublishedPostsByCategory(category) {
+return new Promise((resolve, reject) => {
+  let temp = posts.filter((post) => {
+    return post.published === true && post.category === category;
+  });
+  if (temp.length === 0) {
+    reject("No results returned");
+  } else {
+    resolve(temp);
+  }
+});
+}
+
 module.exports = {
   initialize,
   getAllPosts,
@@ -151,4 +164,5 @@ module.exports = {
   getPostsByCategory,
   getPostsByMinDate,
   getPostById,
+  getPublishedPostsByCategory,
 }
