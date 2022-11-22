@@ -47,6 +47,7 @@ app.engine('.hbs', exphbs.engine({
       let month = (dateObj.getMonth() + 1).toString();
       let day = dateObj.getDate().toString();
       return `${year}-${month.padStart(2, '0')}-${day.padStart(2,'0')}`;
+    }
   }
 }));
 app.set('view engine', '.hbs');
@@ -129,14 +130,22 @@ app.get("/blog", async (req, res) => {
 app.get("/posts", (req, res) => {
   if (req.query.hasOwnProperty('category')) {
     data.getPostsByCategory(Number(req.query.category)).then((data) => {
-      res.render('posts', { posts: data });
+      if (data.length > 0) {
+        res.render('posts', { posts: data });
+      } else {
+        res.render("posts", { message: "no results" });
+      }
     }).catch((err) => {
       console.log("Error retrieving posts: " + err);
       res.render("posts", { message: "no results" });
     });
   } else if (req.query.hasOwnProperty('minDate')) {
     data.getPostsByMinDate(req.query.minDate).then((data) => {
-      res.render('posts', { posts: data });
+      if (data.length > 0) {
+        res.render('posts', { posts: data });
+      } else {
+        res.render("posts", { message: "no results" });
+      }
     }).catch((err) => {
       console.log("Error retrieving posts: " + err);
       res.render("posts", { message: "no results" });
@@ -144,7 +153,11 @@ app.get("/posts", (req, res) => {
   } else {
     data.getAllPosts()
       .then((data) => {
-        res.render('posts', { posts: data });
+        if (data.length > 0) {
+          res.render('posts', { posts: data });
+        } else {
+          res.render("posts", { message: "no results" });
+        }
       })
       .catch((err) => {
         console.log("Error retrieving posts: " + err);
@@ -172,7 +185,11 @@ app.get("/posts/:value", (req, res) => {
 app.get("/categories", (req, res) => {
   data.getCategories()
     .then((data) => {
-      res.render("categories", { categories: data });
+      if (data.length > 0) {
+        res.render("categories", { categories: data });
+      } else {
+        res.render("categories", { message: "no results" });
+      }
     })
     .catch((err) => {
       console.log("Error retrieving categories: " + err);

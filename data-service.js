@@ -12,7 +12,6 @@
 
 // Sequelize config
 const Sequelize = require('sequelize');
-const { SequelizeMethod } = require('sequelize/types/utils');
 const sequelize = new Sequelize('d1qsngvf6mg3lb', 'mdkaivmqngmdpo', 'f9f3058d0910434bc6e8d49f0bf9cb2fba475516f326a9944e16b6a64587384f', {
   host: 'ec2-52-71-23-11.compute-1.amazonaws.com',
   dialect: 'postgres',
@@ -29,7 +28,7 @@ const Post = sequelize.define('Post', {
   title: Sequelize.STRING,
   postDate: Sequelize.DATE,
   featureImage: Sequelize.STRING,
-  published: SequelizeMethod.BOOLEAN
+  published: Sequelize.BOOLEAN
 });
 
 const Category = sequelize.define('Category', {
@@ -56,8 +55,8 @@ function addPost(post) {
   return new Promise((resolve, reject) => {
     post.published = post.published ? true : false;
     for (key in post) {
-      if (arr[key] === "") {
-        arr[key] = null;
+      if (post[key] === "") {
+        post[key] = null;
       }
     }
     post.postDate = new Date();
@@ -65,6 +64,49 @@ function addPost(post) {
       resolve();
     }).catch((e) => {
       reject("Post creation failed: " + e);
+    });
+  });
+}
+
+function addCategory(category) {
+  return new Promise((resolve, reject) => {
+    for(key in category) {
+      if (category[key] === "") {
+        category[key] = null;
+      }
+    }
+    Category.create(category).then(() => {
+      resolve();
+    }).catch((e) => {
+      reject("Error creating category: " + e);
+    });
+  });
+}
+
+function deleteCategoryById(id) {
+  return new Promise((resolve, reject) => {
+    Category.destroy({
+      where: {
+        id: id
+      }
+    }).then(() => {
+      resolve();
+    }).catch((e) => {
+      reject("Error destroying category " + id + ": " + e);
+    });
+  });
+}
+
+function deletePostById(id) {
+  return new Promise((resolve, reject) => {
+    Post.destroy({
+      where: {
+        id: id
+      }
+    }).then(() => {
+      resolve();
+    }).catch((e) => {
+      reject("Error destroying post " + id + ": " + e);
     });
   });
 }
