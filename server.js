@@ -1,10 +1,10 @@
 /*********************************************************************************
-*  WEB322 – Assignment 3
+*  WEB322 – Assignment 5
 *  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.  
 *  No part of this assignment has been copied manually or electronically from any other source
 *  (including web sites) or distributed to other students.
 * 
-*  Name: Carmen Whitton Student ID: 102710217 Date: 10/26/2022
+*  Name: Carmen Whitton Student ID: 102710217 Date: 11/20/2022
 *
 *  Online (Heroku) URL: https://web322-carmen.herokuapp.com/
 *
@@ -41,7 +41,12 @@ app.engine('.hbs', exphbs.engine({
     },
     safeHTML: function (context) {
       return stripjs(context);
-    }
+    },
+    formatDate: function(dateObj){
+      let year = dateObj.getFullYear();
+      let month = (dateObj.getMonth() + 1).toString();
+      let day = dateObj.getDate().toString();
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2,'0')}`;
   }
 }));
 app.set('view engine', '.hbs');

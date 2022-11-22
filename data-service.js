@@ -9,149 +9,92 @@
 *  Online (Heroku) URL: https://web322-carmen.herokuapp.com/
 *
 ********************************************************************************/
-const fs = require('fs');
-const path = require('path');
 
-// Representation of the JSON data
-let posts = [];
-let categories = [];
+// Sequelize config
+const Sequelize = require('sequelize');
+const { SequelizeMethod } = require('sequelize/types/utils');
+const sequelize = new Sequelize('d1qsngvf6mg3lb', 'mdkaivmqngmdpo', 'f9f3058d0910434bc6e8d49f0bf9cb2fba475516f326a9944e16b6a64587384f', {
+  host: 'ec2-52-71-23-11.compute-1.amazonaws.com',
+  dialect: 'postgres',
+  port: 5432,
+  dialectOptions: {
+    ssl:{rejectUnauthorized: false}
+  },
+  query: {raw:true}
+});
+
+// Data Models
+const Post = sequelize.define('Post', {
+  body: Sequelize.TEXT,
+  title: Sequelize.STRING,
+  postDate: Sequelize.DATE,
+  featureImage: Sequelize.STRING,
+  published: SequelizeMethod.BOOLEAN
+});
+
+const Category = sequelize.define('Category', {
+  category: Sequelize.STRING
+});
+
+Post.belongsTo(Category, {foreignKey: 'category'});
 
 // Reads and parses the data from the employees.json file into the
 // global employees variable. Does the same for departments and
 // departments.json
 function initialize() {
   return new Promise((resolve, reject) => {
-    try {
-      fs.readFile(path.join(__dirname, '/data/posts.json'), 'utf-8', (err, data) => {
-        if (err) {
-          console.log(err);
-          throw err;
-        }
-
-        posts = JSON.parse(data);
-      });
-
-      fs.readFile(path.join(__dirname, '/data/categories.json'), 'utf-8', (err, data) => {
-        if (err) {
-          console.log(err);
-          throw err;
-        }
-
-        categories = JSON.parse(data);
-      });
-    } catch (ex) {
-      console.log("Error encountered in file reading.");
-      reject("Error encountered in file reading.");
-    }
-    resolve();
+    reject();
   });
 }
 
 // Add post
 function addPost(post) {
   return new Promise((resolve, reject) => {
-    if (post.hasOwnProperty('published')) {
-      post.published = true;
-    } else {
-      posts.published = false;
-    }
-    post.id = posts.length + 1;
-    date = new Date();
-    post.postDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-    posts.push(post);
-
-    if (post) {
-      resolve(post);
-    } else {
-      reject("Error adding post! " + post);
-    }
+    reject();
   });
 }
 
 // Returns the list of all posts
 function getAllPosts() {
   return new Promise((resolve, reject) => {
-    if (posts.length === 0) {
-      reject("No posts found!");
-    } else {
-      resolve(posts.filter(() => { return true; }));
-    }
+    reject();
   });
 }
 
 function getPublishedPosts() {
   return new Promise((resolve, reject) => {
-    if (posts.length === 0) {
-      reject("No posts found");
-    }
-    else {
-      resolve(posts.filter((post) => {
-        return post.published === true;
-      }));
-    }
+    reject();
   });
 }
 
 // Returns the list of all categories
 function getCategories() {
   return new Promise((resolve, reject) => {
-    if (categories.length === 0) {
-      reject("No results found");
-    } else {
-      resolve(categories.filter(() => { return true; }));
-    }
+    reject();
   });
 }
 
 function getPostsByCategory(category) {
   return new Promise((resolve, reject) => {
-    let temp = posts.filter((post) => {
-      return post.category === category;
-    });
-    if (temp.length === 0) {
-      reject("No results returned");
-    } else {
-      resolve(temp);
-    }
+    reject();
   });
 }
 
 function getPostsByMinDate(minDateStr) {
   return new Promise((resolve, reject) => {
-    let temp = posts.filter((post) => {
-      return (new Date(post.postDate) >= new Date(minDateStr));
-    });
-    if (temp.length === 0) {
-      reject("No results returned");
-    } else {
-      resolve(temp);
-    }
+    reject();
   });
 }
 
 function getPostById(id) {
   return new Promise((resolve, reject) => {
-    let temp = posts.filter((post) => {
-      return post.id === id;
-    });
-    if (temp.lenth === 0) {
-      reject("No result returned");
-    } else {
-      resolve(temp[0]);
-    }
+    reject();
   });
 }
 
 function getPublishedPostsByCategory(category) {
 return new Promise((resolve, reject) => {
-  let temp = posts.filter((post) => {
-    return post.published === true && post.category === category;
-  });
-  if (temp.length === 0) {
-    reject("No results returned");
-  } else {
-    resolve(temp);
-  }
+  reject();
 });
 }
 
