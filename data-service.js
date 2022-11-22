@@ -43,58 +43,125 @@ Post.belongsTo(Category, {foreignKey: 'category'});
 // departments.json
 function initialize() {
   return new Promise((resolve, reject) => {
-    reject();
+    sequelize.sync().then(() => {
+      resolve();
+    }).catch((e) => {
+      reject("Unable to sync the database: " + e);
+    });
   });
 }
 
 // Add post
 function addPost(post) {
   return new Promise((resolve, reject) => {
-    reject();
+    post.published = post.published ? true : false;
+    for (key in post) {
+      if (arr[key] === "") {
+        arr[key] = null;
+      }
+    }
+    post.postDate = new Date();
+    Post.create(post).then(() => {
+      resolve();
+    }).catch((e) => {
+      reject("Post creation failed: " + e);
+    });
   });
 }
 
 // Returns the list of all posts
 function getAllPosts() {
   return new Promise((resolve, reject) => {
-    reject();
+    Post.findAll().then((data) => {
+      resolve(data);
+    }).catch((e) => {
+      reject("No results retured for getAllPosts: " + e);
+    });
   });
 }
 
 function getPublishedPosts() {
   return new Promise((resolve, reject) => {
-    reject();
+    Post.findAll({
+      where: {
+        published: true
+      }
+    }).then((data) => {
+      resolve(data);
+    }).catch((e) => {
+      reject("No results returned for getPublishedPosts: " + e);
+    });
   });
 }
 
 // Returns the list of all categories
 function getCategories() {
   return new Promise((resolve, reject) => {
-    reject();
+    Category.findAll().then((data) => {
+      resolve(data);
+    }).catch((e) => {
+      reject("No results returned for getCategories: " + e);
+    });
   });
 }
 
 function getPostsByCategory(category) {
   return new Promise((resolve, reject) => {
-    reject();
+    Post.findAll({
+      where: {
+        category: category
+      }
+    }).then((data) => {
+      resolve(data);
+    }).catch((e) => {
+      reject("No results returned for getPostsByCategory " + category + ": " + e);
+    });
   });
 }
 
 function getPostsByMinDate(minDateStr) {
   return new Promise((resolve, reject) => {
-    reject();
+    const {gte} = Sequelize.Op;
+    Post.findAll({
+      where: {
+        postDate: {
+          [gte] : new Date(minDateStr)
+        }
+      }
+    }).then((data) => {
+      resolve(data);
+    }).catch((e) => {
+      reject("No results returned for getPostsByMinDate " + minDateStr + ": " + e);
+    });
   });
 }
 
 function getPostById(id) {
   return new Promise((resolve, reject) => {
-    reject();
+    Post.findAll({
+      where: {
+        id: id
+      }
+    }).then((data) => {
+      resolve(data[0]);
+    }).catch((e) => {
+      reject("No results returned for getPostById " + id + ": " + e);
+    });
   });
 }
 
 function getPublishedPostsByCategory(category) {
 return new Promise((resolve, reject) => {
-  reject();
+  Post.findAll({
+    where: {
+      published: true,
+      category: category
+    }
+  }).then((data) => {
+    resolve(data);
+  }).reject((e) => {
+    reject("No results returned for getPublishedPostsByCategory: " + e);
+  })
 });
 }
 
