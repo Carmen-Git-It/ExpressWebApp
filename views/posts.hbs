@@ -17,15 +17,17 @@
                     <th>Post Date</th>
                     <th>Category</th>
                     <th>Published</th>
+                    <th></th>
                 </tr>
 
                 {{#each posts}}
                 <tr>
                     <td>{{id}}</td>
                     <td>{{title}}</td>
-                    <td>{{postDate}}</td>
+                    <td>{{#formatDate postDate}}{{/formatDate}}</td>
                     <td>{{category}}</td>
                     <td>{{published}}</td>
+                    <td><a href="/posts/delete/{{id}}" class="btn btn-danger">Remove</a></td>
                 </tr>
                 {{/each}}
             </table>

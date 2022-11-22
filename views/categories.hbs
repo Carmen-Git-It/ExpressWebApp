@@ -14,11 +14,13 @@
                 <tr>
                     <th>Category ID</th>
                     <th>Category Name</th>
+                    <th></th>
                 </tr>
                 {{#each categories}}
                 <tr>
                     <td><a href="/posts?category={{id}}">{{id}}</a></td>
                     <td><a href="/posts?category={{id}}">{{category}}</a></td>
+                    <td><a href="/categories/delete/{{id}}" class="btn btn-danger">Remove</a></td>
                 </tr>
                 {{/each}}
             </table>

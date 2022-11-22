@@ -69,6 +69,7 @@ function addPost(post) {
 }
 
 function addCategory(category) {
+  console.log("!!!!!!Adding Category!!!!!");
   return new Promise((resolve, reject) => {
     for(key in category) {
       if (category[key] === "") {
@@ -193,18 +194,18 @@ function getPostById(id) {
 }
 
 function getPublishedPostsByCategory(category) {
-return new Promise((resolve, reject) => {
-  Post.findAll({
-    where: {
-      published: true,
-      category: category
-    }
-  }).then((data) => {
-    resolve(data);
-  }).reject((e) => {
-    reject("No results returned for getPublishedPostsByCategory: " + e);
-  })
-});
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: {
+        published: true,
+        category: category
+      }
+    }).then((data) => {
+      resolve(data);
+    }).catch((e) => {
+      reject("No results returned for getPublishedPostsByCategory: " + e);
+    });
+  });
 }
 
 module.exports = {
@@ -217,4 +218,7 @@ module.exports = {
   getPostsByMinDate,
   getPostById,
   getPublishedPostsByCategory,
+  deleteCategoryById,
+  deletePostById,
+  addCategory
 }
