@@ -10,6 +10,8 @@
   "author": "Carmen Whitton",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "client-sessions": "^0.8.0",
     "cloudinary": "^1.32.0",
     "express": "^4.18.1",
     "express-handlebars": "^6.0.6",

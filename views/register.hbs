@@ -1,0 +1,44 @@
+<div class="row">
+  <div class="col-md-12">
+
+    <h2>Register</h2>
+
+    <br />
+
+    {{#if errorMessage}}
+        <div class="alert alert-danger"> <strong>Error:</strong> {{errorMessage}}</div> 
+    {{/if}}
+
+    {{#if successMessage}}
+        <div class="alert alert-success"> <strong>Success:</strong> {{successMessage}}</div><a class="btn btn-success pull-right" href="/login">&nbsp;&nbsp;&nbsp;Proceed to Log in&nbsp;&nbsp;&nbsp;</a><br /><br /><br />
+    {{/if}}
+
+    {{#unless successMessage}}
+        <form method="post" action="/register">
+        <div class="row">
+            <div class="col-md-12">
+            <div class="form-group">
+                <label for="userName">User Name:</label>
+                {{#if userName}}
+                    <input class="form-control" id="userName" name="userName" type="text" value={{userName}} autofocus required/>
+                {{else}}
+                    <input class="form-control" id="userName" name="userName" type="text" value="User Name" autofocus required/>
+                {{/if}}
+                <label for="password">Password:</label>
+                <input class="form-control" id="password" name="password" type="text" value="Password" autofocus required/>
+                <label for="password2">Confirm Password</label>
+                <input class="form-control" id="password2" name="password2" type="text" value="Confirm Password" autofocus required/>
+                <label for="email">Email Address:</label>
+                <input class="form-control" id="email" name="email" type="text" value="Email Address" autofocus required/>
+            </div>
+            </div>
+        </div>
+
+      <hr />
+
+      <input type="submit" class="btn btn-primary pull-right" value="Register" /><br /><br /><br />
+
+        </form>
+    {{/unless}}
+  </div>
+</div>

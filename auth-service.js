@@ -11,6 +11,7 @@
 ********************************************************************************/
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const bcrypt = require('bcryptjs');
 
 const userSchema = new Schema({
     "userName" : {
@@ -67,7 +68,7 @@ function checkUser(userData) {
         User.find({userName : userData.userName})
         .exec()
         .then((users) => {
-            if (users.length !== 0) {
+            if (users.length === 0) {
                 reject("Unable to find user: " + userData.userName);
             } else if (users[0].password !== userData.password) {
                 reject("Incorrect Password for user: " + userData.userName);
