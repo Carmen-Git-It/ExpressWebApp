@@ -1,10 +1,10 @@
 /*********************************************************************************
-*  WEB322 – Assignment 3
+*  WEB322 – Assignment 6
 *  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.  
 *  No part of this assignment has been copied manually or electronically from any other source
 *  (including web sites) or distributed to other students.
 * 
-*  Name: Carmen Whitton Student ID: 102710217 Date: 10/26/2022
+*  Name: Carmen Whitton Student ID: 102710217 Date: 12/10/2022
 *
 *  Online (Heroku) URL: https://web322-carmen.herokuapp.com/
 *
