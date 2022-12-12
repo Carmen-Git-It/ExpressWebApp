@@ -49,15 +49,23 @@ function registerUser(userData) {
         if (userData.password !== userData.password2) {
             reject("Error: Passwords do not match!");
         } else {
-            let newUser = new User(userData);
-            newUser.save().then(() => {
-                resolve(newUser);
-            }).catch((err) => {
-                if (err.code === 11000) {
-                    reject("User Name already taken");
-                } else {
-                    reject("There was an error creating the user: " + err);
-                }
+            bcrypt.hash(userData.password, 10).then((hash)=>{ // Hash the password using a Salt that was generated using 10 rounds
+                userData.password = hash;
+                let newUser = new User(userData);
+
+                newUser.save().then(() => {
+                    resolve(newUser);
+                }).catch((err) => {
+                    if (err.code === 11000) {
+                        reject("User Name already taken");
+                    } else {
+                        reject("There was an error creating the user: " + err);
+                    }
+                });
+            })
+            .catch(err=>{
+                console.log(err); // Show any errors that occurred during the process
+                reject("Error hashing password!");
             });
         }
     });
@@ -70,17 +78,23 @@ function checkUser(userData) {
         .then((users) => {
             if (users.length === 0) {
                 reject("Unable to find user: " + userData.userName);
-            } else if (users[0].password !== userData.password) {
-                reject("Incorrect Password for user: " + userData.userName);
-            } else if (users[0].password === userData.password) {
-                users[0].loginHistory.push({dateTime: (new Date()).toString(), userAgent: userData.userAgent});
-                User.updateOne({userName : users[0].userName},
-                    {$set: {loginHistory : users[0].loginHistory}}).then(() => {
-                        resolve(users[0]);
-                    }).catch((err) => {
-                        reject("There was an error verifying the user:" + err);
-                    });
-            }
+            } else {
+                bcrypt.compare(userData.password, users[0].password).then((result) => {
+                    if (result) {
+                        users[0].loginHistory.push({dateTime: (new Date()).toString(), userAgent: userData.userAgent});
+                        User.updateOne({userName : users[0].userName},
+                            {$set: {loginHistory : users[0].loginHistory}}).then(() => {
+                                resolve(users[0]);
+                            }).catch((err) => {
+                                reject("There was an error verifying the user:" + err);
+                            });
+                    } else {
+                        reject("Incorrect Password for user: " + userData.userName);
+                    }
+                 }).catch((err) => {
+                    reject("Error comparing hashed password!");
+                 });
+                }
         }).catch((err) => {
             reject("There was an error verifying the user: " + userData.userName);
         }); 
