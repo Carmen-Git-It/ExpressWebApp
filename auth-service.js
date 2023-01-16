@@ -31,7 +31,7 @@ let User; // to be defined on new connection (see initialize)
 // Initializes the connection to the MongoDB database
 function initialize() {
     return new Promise((resolve, reject) => {
-        let db = mongoose.createConnection("mongodb+srv://carmen-git-it:if85synfQ5idRrS@cluster0.uiian.mongodb.net/?retryWrites=true&w=majority");
+        let db = mongoose.createConnection("mongodb+srv://carmen-git-it:password@cluster0.uiian.mongodb.net/?retryWrites=true&w=majority");
 
         db.on('error', (err)=>{
             reject(err); // reject the promise with the provided error
